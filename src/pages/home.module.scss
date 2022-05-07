@@ -1,0 +1,101 @@
+.layout {
+  min-height: 100vh;
+
+  .menu1 {
+    position: fixed;
+    width: 300px;
+    top: 3rem;
+    left: 1rem;
+
+    span {
+      height: 16px;
+      cursor: pointer;
+      padding: 8px 16px;
+      font-size: large;
+      color: white;
+      background-color: gray;
+      border-radius: 4px;
+      box-sizing: 0 0 4px white;
+      transition: all 0.5s ease-in-out;
+    }
+
+    .menu2 {
+      margin-top: 1rem;
+      height: 550px;
+      overflow: auto;
+
+      &::-webkit-scrollbar-thumb {
+        background-color: aqua;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  input[type="file"] {
+    position: fixed;
+    top: 0;
+  }
+
+  .container {
+    background-image: url("../assets/background.png");
+    box-shadow: 0 0 4px gray;
+    border-radius: 4px;
+    width: 800px;
+    margin: 4rem auto;
+    padding: 2rem;
+    font-size: 18px;
+    line-height: 1.8em;
+    font-family: "Microsoft YaHei", PingFangSC-Regular, HelveticaNeue-Light,
+      "Helvetica Neue Light", sans-serif;
+  }
+
+  .item:hover {
+    color: red;
+    cursor: pointer;
+  }
+
+  .active {
+    color: red;
+  }
+
+  .search {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+
+    input {
+      outline: none;
+      border: none;
+      border-radius: 4px;
+      box-shadow: 0 0 4px gray;
+      padding: 4px 8px;
+    }
+  }
+
+  button {
+    cursor: pointer;
+    position: fixed;
+    bottom: 2rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 0 4px gray;
+    outline: none;
+    font-size: large;
+  }
+
+  .left {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 0 4px gray;
+    outline: none;
+    left: 4rem;
+    font-size: large;
+  }
+
+  .right {
+    right: 4rem;
+  }
+}
