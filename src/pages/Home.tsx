@@ -29,7 +29,7 @@ export default function Home() {
 
   const [show, setShow] = useState(false);
 
-  const [menu, setMenu] = useState("目录");
+  const [menu, setMenu] = useState<"目录" | "缩回">("目录");
 
   function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
@@ -40,6 +40,7 @@ export default function Home() {
     }
   }
 
+  // 上传文件
   function upload(e: React.ChangeEvent<HTMLInputElement>) {
     let file = e.target.files?.item(0) as File;
 
@@ -66,20 +67,32 @@ export default function Home() {
     };
   }
 
-  useEffect(() => {
-    document.onkeydown = (e) => {
-      if (e.key === "ArrowRight") {
-        setIndex((prev) => prev + 1);
-      }
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "ArrowRight") {
+      setIndex((prev) => prev + 1);
+    }
 
-      if (e.key === "ArrowLeft") {
-        setIndex((prev) => prev - 1);
-      }
-    };
+    if (e.key === "ArrowLeft") {
+      setIndex((prev) => prev - 1);
+    }
+  }
+
+  // 每次载入时绑定事件，完美避开组件属性调用
+  useEffect(() => {
+    document.addEventListener("keydown", () => handleKeyDown, false);
+
+    return () =>
+      document.removeEventListener("keydown", () => handleKeyDown, false);
   }, []);
 
- 
+  // 每次载入小说时跳转到第一章
+  useEffect(() => {
+    if (typeof novel === "undefined") {
+      setIndex(0);
+    }
+  }, [novel]);
 
+  // 每次更新章节时跳转到章节首部
   useEffect(() => {
     if (typeof novel === "undefined") {
       return;
@@ -95,10 +108,21 @@ export default function Home() {
       return;
     }
 
-    let node = menuRef.current?.children.item(index) as HTMLParagraphElement;
-    node.scrollIntoView();
     document.documentElement.scrollIntoView();
   }, [index, novel]);
+
+  // 每次更新章节或者点击目录时，使当前章节居于章节列表视图中间
+  useEffect(() => {
+    let node = menuRef.current?.children.item(index);
+
+    if (typeof node === "undefined" || node === null) {
+      return;
+    }
+
+    if (node instanceof HTMLParagraphElement) {
+      node.scrollIntoView({ block: "center" });
+    }
+  }, [show, index]);
 
   return (
     <div className={styles.layout}>
