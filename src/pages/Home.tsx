@@ -56,7 +56,7 @@ export default function Home() {
       let formData = new FormData();
       formData.append("file", file);
       axios
-        .post("http://localhost:8080/upload", formData, {
+        .post("/api/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
