@@ -77,7 +77,7 @@ export default function Home() {
     }
   }
 
-  // 每次载入时绑定事件，完美避开组件属性调用
+  // 每次载入时绑定事件 卸载时解绑事件
   useEffect(() => {
     document.addEventListener("keydown", () => handleKeyDown, false);
 
@@ -87,31 +87,17 @@ export default function Home() {
 
   // 每次载入小说时跳转到第一章
   useEffect(() => {
-    if (typeof novel === "undefined") {
+    if (typeof novel !== "undefined") {
       setIndex(0);
     }
   }, [novel]);
 
   // 每次更新章节时跳转到章节首部
   useEffect(() => {
-    if (typeof novel === "undefined") {
-      return;
-    }
-
-    if (index < 0) {
-      alert("已到最顶");
-      return;
-    }
-
-    if (index >= novel.chapters.length) {
-      alert("已到最底");
-      return;
-    }
-
     document.documentElement.scrollIntoView();
-  }, [index, novel]);
+  }, [index]);
 
-  // 每次更新章节或者点击目录时，使当前章节居于章节列表视图中间
+  // 每次更新章节或者点击目录时，使当前章节标题居于章节列表视图中间
   useEffect(() => {
     let node = menuRef.current?.children.item(index);
 
