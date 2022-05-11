@@ -9,14 +9,16 @@
 
     span {
       height: 16px;
-      cursor: pointer;
       padding: 8px 16px;
       font-size: large;
       color: white;
       background-color: gray;
       border-radius: 4px;
       box-sizing: 0 0 4px white;
-      transition: all 0.5s ease-in-out;
+
+      &:hover {
+        cursor: pointer;
+      }
     }
 
     .menu2 {

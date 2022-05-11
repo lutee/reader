@@ -2,15 +2,24 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./home.module.scss";
 
-interface Text {
+interface Novel {
+  name: string;
+  author: string;
+  introduce: string[];
+  chapters: Chapter[];
+  createdAt?: Date;
+  modifiedAt?: Date;
+}
+
+interface Chapter {
   title: string;
   content: string[];
+  createdAt?: Date;
+  modifiedAt?: Date;
 }
 
 export default function Home() {
-  const [list, setList] = useState<Text[]>([
-    { title: "sss", content: ["sfsdf"] },
-  ]);
+  const [novel, setNovel] = useState<Novel>();
 
   const searchRef = useRef<HTMLInputElement | null>(null);
 
@@ -22,44 +31,22 @@ export default function Home() {
 
   const [menu, setMenu] = useState("目录");
 
-  function nextPage() {
-    setIndex((prev) => prev + 1);
-    currentItem(true);
-    document.body.scrollIntoView();
-  }
-
-  function prevPage() {
-    setIndex((prev) => prev - 1);
-    currentItem(false);
-    document.body.scrollIntoView();
-  }
-
-  function currentPage(page: number) {
-    setIndex(page);
-    currentItem(true);
-    document.body.scrollIntoView();
-  }
-
-  function currentItem(up: boolean) {
-    let node = menuRef.current?.children.item(
-      up ? index + 1 : index - 1
-    ) as HTMLParagraphElement;
-    node.scrollIntoView();
-  }
-
   function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
       let page = searchRef.current?.valueAsNumber;
-      if (page && page <= list?.length) {
-        currentPage(page);
+      if (typeof page !== "undefined") {
+        setIndex(page);
       }
-
-      console.log(searchRef.current?.value);
     }
   }
 
   function upload(e: React.ChangeEvent<HTMLInputElement>) {
     let file = e.target.files?.item(0) as File;
+
+    if (file === null) {
+      return;
+    }
+
     let reader = new FileReader();
 
     reader.readAsText(file);
@@ -74,8 +61,7 @@ export default function Home() {
           },
         })
         .then((res) => {
-          let data = res.data as Text[];
-          setList(data);
+          setNovel(res.data);
         });
     };
   }
@@ -83,17 +69,39 @@ export default function Home() {
   useEffect(() => {
     document.onkeydown = (e) => {
       if (e.key === "ArrowRight") {
-        nextPage();
+        setIndex((prev) => prev + 1);
       }
 
       if (e.key === "ArrowLeft") {
-        prevPage();
+        setIndex((prev) => prev - 1);
       }
     };
-  });
+  }, []);
+
+ 
+
+  useEffect(() => {
+    if (typeof novel === "undefined") {
+      return;
+    }
+
+    if (index < 0) {
+      alert("已到最顶");
+      return;
+    }
+
+    if (index >= novel.chapters.length) {
+      alert("已到最底");
+      return;
+    }
+
+    let node = menuRef.current?.children.item(index) as HTMLParagraphElement;
+    node.scrollIntoView();
+    document.documentElement.scrollIntoView();
+  }, [index, novel]);
 
   return (
-    <div className={styles.layout} tabIndex={0}>
+    <div className={styles.layout}>
       <input type="file" accept=".txt" onChange={upload} />
       <div className={styles.menu1}>
         <span
@@ -104,40 +112,49 @@ export default function Home() {
         >
           {menu}
         </span>
-        {show ? (
-          <div className={styles.menu2} ref={menuRef}>
-            {list?.map((v, i) => {
-              return (
-                <p
-                  key={i}
-                  className={
-                    index === i
-                      ? `${styles.item} ${styles.active}`
-                      : `${styles.item}`
+        <div
+          className={styles.menu2}
+          style={show ? { display: "block" } : { display: "none" }}
+          ref={menuRef}
+        >
+          {novel?.chapters?.map((v, i) => {
+            return (
+              <p
+                key={i}
+                className={styles.item}
+                style={index === i ? { color: "red" } : undefined}
+                onClick={() => {
+                  if (novel.chapters.length > 1) {
+                    setIndex(i);
                   }
-                  onClick={() => currentPage(i)}
-                >
-                  {v.title}
-                </p>
-              );
-            })}
-          </div>
-        ) : undefined}
+                }}
+              >
+                {v.title}
+              </p>
+            );
+          })}
+        </div>
       </div>
       <div className={styles.container}>
-        <p>{list?.at(index)?.title}</p>
-        {list?.at(index)?.content.map((c, i) => {
+        <p>{novel?.chapters?.at(index)?.title}</p>
+        {novel?.chapters?.at(index)?.content.map((c, i) => {
           return <p key={i}>{c}</p>;
         })}
       </div>
       <div className={styles.search}>
         <input type="number" ref={searchRef} onKeyDown={handleSearch} />
       </div>
-      <button className={styles.left} onClick={prevPage}>
-        prev
+      <button
+        className={styles.left}
+        onClick={() => setIndex((prev) => prev - 1)}
+      >
+        上一章
       </button>
-      <button className={styles.right} onClick={nextPage}>
-        next
+      <button
+        className={styles.right}
+        onClick={() => setIndex((prev) => prev + 1)}
+      >
+        下一章
       </button>
     </div>
   );
