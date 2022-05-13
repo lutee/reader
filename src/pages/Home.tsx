@@ -79,10 +79,10 @@ export default function Home() {
 
   // 每次载入时绑定事件 卸载时解绑事件
   useEffect(() => {
-    document.addEventListener("keydown", () => handleKeyDown, false);
+    document.addEventListener("keydown", (e) => handleKeyDown(e), false);
 
     return () =>
-      document.removeEventListener("keydown", () => handleKeyDown, false);
+      document.removeEventListener("keydown", (e) => handleKeyDown(e), false);
   }, []);
 
   // 每次载入小说时跳转到第一章
